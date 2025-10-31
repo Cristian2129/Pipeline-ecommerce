@@ -1,0 +1,113 @@
+# Configuración del Pipeline de E-commerce
+# Parcial Segundo Corte - Data Engineering
+
+pipeline:
+  name: "ecommerce_data_pipeline"
+  version: "1.0.0"
+  author: "Estudiante"
+  
+# Configuración de fuentes de datos
+data_sources:
+  api:
+    base_url: "https://fakestoreapi.com"
+    endpoints:
+      products: "/products"
+    timeout: 30
+    retry_attempts: 3
+    
+  csv_files:
+    sales:
+      path: "data/input/sales.csv"
+      encoding: "utf-8"
+      separator: ","
+    inventory:
+      path: "data/input/inventory.csv"
+      encoding: "utf-8"
+      separator: ","
+
+# Configuración de almacenamiento
+storage:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  format: "parquet"
+  compression: "snappy"
+  partitioning:
+    enabled: true
+    column: "ingestion_date"
+
+# Configuración de transformaciones
+transformations:
+  stock_critical_threshold: 10  # Umbral para stock crítico
+  top_products_limit: 10  # Top N productos más vendidos
+  
+  # Categorías válidas esperadas
+  valid_categories:
+    - "electronics"
+    - "jewelery"
+    - "men's clothing"
+    - "women's clothing"
+
+# Configuración de tests de calidad
+quality_tests:
+  enabled: true
+  fail_on_error: false  # Cambiar a true en producción
+  
+  tests:
+    - name: "no_negative_prices"
+      enabled: true
+      severity: "critical"
+      
+    - name: "positive_integer_stock"
+      enabled: true
+      severity: "critical"
+      
+    - name: "valid_categories"
+      enabled: true
+      severity: "warning"
+      
+    - name: "valid_sale_dates"
+      enabled: true
+      severity: "critical"
+
+# Configuración de logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "logs/pipeline_execution.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+
+# Configuración de reportes
+reporting:
+  enabled: true
+  output_path: "reports/execution_report.txt"
+  include_metrics: true
+  include_errors: true
+  
+# Configuración de alertas
+alerts:
+  enabled: false  # Habilitar cuando se configure email/slack
+  email:
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    sender: "pipeline@example.com"
+    recipients:
+      - "data-team@example.com"
+  
+  conditions:
+    - type: "stock_critical"
+      threshold: 5
+      message: "Productos con stock crítico detectados"
+    
+    - type: "quality_test_failed"
+      severity: "critical"
+      message: "Test de calidad crítico falló"
+
+# Configuración de performance
+performance:
+  chunk_size: 1000 
+  parallel_processing: false  
+  cache_enabled: false  
+
+# Configuración de ambiente
+environment: "development"  # development, staging, production
