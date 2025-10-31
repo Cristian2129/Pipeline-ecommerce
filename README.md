@@ -1,6 +1,6 @@
-# Parcial Segundo Corte - Data Engineering Pipeline
+# Parcial Segundo Corte 
 
-## Estudiante: [Tu Nombre]
+## Estudiante: Cristian Vega
 ## Fecha: 31 de Octubre, 2025
 
 ---
